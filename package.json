@@ -1,0 +1,46 @@
+{
+  "name": "@tinetti/model-mux",
+  "version": "0.1.0",
+  "description": "Cost-balanced multi-model router with local Ollama plan evaluator and OpenAI cloud escalation",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "lint": "echo 'no linter configured'",
+    "test": "node -e \"console.log('tests pending')\"",
+    "prepare": "pnpm run build"
+  },
+  "keywords": [
+    "router",
+    "llm",
+    "openai",
+    "ollama",
+    "planning",
+    "validation"
+  ],
+  "author": "tinetti",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tinetti/model-mux.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "openai": "^4.52.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^5.6.3"
+  }
+}
