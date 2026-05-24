@@ -5,12 +5,12 @@ export type ModelsConfig = {
   coder: string
   validator: string
   longContext: string
-  ollama: string
+  omlx: string
 }
 
 export type Config = {
   openaiApiKey: string
-  ollamaBaseURL?: string // OpenAI-compatible
+  omlxBaseURL?: string // OpenAI-compatible
   models: ModelsConfig
   thresholds?: Thresholds
   longContext?: { enabled: boolean; tokenTrigger: number }
@@ -21,7 +21,7 @@ let CONFIG: Required<Config>
 export function configure(cfg: Config) {
   CONFIG = {
     openaiApiKey: cfg.openaiApiKey,
-    ollamaBaseURL: cfg.ollamaBaseURL ?? 'http://localhost:11434/v1',
+    omlxBaseURL: cfg.omlxBaseURL ?? 'http://127.0.0.1:8000/v1',
     models: cfg.models,
     thresholds: cfg.thresholds ?? defaultThresholds,
     longContext: cfg.longContext ?? defaultLongContext,

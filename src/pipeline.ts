@@ -1,5 +1,5 @@
 import { generatePlanCandidate, type PlanInput } from './prompts/planner.js'
-import { evaluateWithOllama } from './prompts/evaluator.js'
+import { evaluateWithOmlx } from './prompts/evaluator.js'
 import { Plan } from './schemas/plan.js'
 import { Validation } from './schemas/validation.js'
 import { getConfig } from './configure.js'
@@ -9,21 +9,22 @@ export async function runPipeline(input: PlanInput): Promise<{ plans: Plan[]; ev
   const cfg = getConfig()
   // 3 candidate plans from the planner model with diverse temps
   const temps = [temperatures.plannerPrecise, temperatures.plannerBalanced, temperatures.plannerExploratory]
-  const planPromises = temps.map((t) =>
-    generatePlanCandidate(input, cfg.models.planner, t, { apiKey: cfg.openaiApiKey })
+  const styles: Array<'precise' | 'balanced' | 'exploratory'> = ['precise', 'balanced', 'exploratory']
+  const planPromises = temps.map((t, idx) =>
+    generatePlanCandidate(input, cfg.models.planner, t, { apiKey: cfg.openaiApiKey, style: styles[idx] })
   )
   const plans = await Promise.all(planPromises)
 
-  // Evaluate each plan via Ollama (OpenAI-compatible)
+  // Evaluate each plan via oMLX (OpenAI-compatible)
   const evalPromises = plans.map((p) =>
-    evaluateWithOllama(JSON.stringify(p), {
+    evaluateWithOmlx(JSON.stringify(p), {
       objective: input.objective,
       constraints: input.constraints,
       acceptanceCriteria: input.acceptanceCriteria,
     }, {
-      apiKey: cfg.openaiApiKey, // some Ollama setups ignore apiKey; OpenAI client requires a string
-      baseURL: cfg.ollamaBaseURL,
-      model: cfg.models.ollama,
+      apiKey: cfg.openaiApiKey, // some oMLX setups ignore apiKey; OpenAI client requires a string
+      baseURL: cfg.omlxBaseURL,
+      model: cfg.models.omlx,
     })
   )
   const evaluations = await Promise.all(evalPromises)

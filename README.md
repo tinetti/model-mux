@@ -3,7 +3,7 @@
 Cost‑balanced multi‑model router and plan evaluator.
 
 - Planner: o4-mini (generates 3 diverse plans)
-- Local plan evaluator: Ollama (OpenAI‑compatible) using qwen2.5-coder:7b
+- Local plan evaluator: oMLX (OpenAI‑compatible) using mlx-community/Qwen3.6-35B-A3B-8bit
 - Cloud validator (optional escalation): gpt-4o-mini
 - Coder default: gpt-4o
 - Long‑context routing: gpt-4.1 when estimated input > 150k tokens
@@ -29,14 +29,14 @@ import { configure, runPipeline, evaluatePlan, plan, route } from '@tinetti/mode
 
 configure({
   openaiApiKey: process.env.OPENAI_API_KEY!,
-  // Ollama OpenAI‑compatible base URL
-  ollamaBaseURL: 'http://localhost:11434/v1',
+  // oMLX OpenAI‑compatible base URL
+  omlxBaseURL: 'http://127.0.0.1:8000/v1',
   models: {
     planner: 'o4-mini',
     coder: 'gpt-4o',
     validator: 'gpt-4o-mini',
     longContext: 'gpt-4.1',
-    ollama: 'qwen2.5-coder:7b'
+    omlx: 'mlx-community/Qwen3.6-35B-A3B-8bit'
   }
 })
 

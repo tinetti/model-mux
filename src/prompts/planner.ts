@@ -15,6 +15,8 @@ export type PlanInput = {
   acceptanceCriteria?: string[]
 }
 
+type Style = 'precise' | 'balanced' | 'exploratory'
+
 const systemPrompt = `You are a precise planner. Output only valid JSON matching the provided schema.
 Schema:
 {
@@ -26,33 +28,48 @@ Schema:
   "testPlan": string[]
 }`
 
-function userPrompt(input: PlanInput) {
+function userPrompt(input: PlanInput, style: Style) {
+  const styleHint =
+    style === 'precise'
+      ? 'Style: precise and minimal risk; keep steps small and clearly ordered.'
+      : style === 'balanced'
+      ? 'Style: balanced; good coverage and pragmatic detail.'
+      : 'Style: exploratory; consider alternatives and note assumptions.'
   return (
     `Objective: ${input.objective}\n` +
     `Constraints: ${JSON.stringify(input.constraints ?? [])}\n` +
     `Acceptance criteria: ${JSON.stringify(input.acceptanceCriteria ?? [])}\n` +
+    `${styleHint}\n` +
     `Respond with JSON only.`
   )
+}
+
+function supportsTemperature(model: string): boolean {
+  // Models that do not support temperature parameter
+  const noTempModels = ['o3-mini', 'o1', 'o1-mini', 'o1-preview']
+  return !noTempModels.includes(model)
 }
 
 export async function generatePlanCandidate(
   input: PlanInput,
   model: string,
   temperature: number,
-  opts?: { apiKey?: string; baseURL?: string }
+  opts?: { apiKey?: string; baseURL?: string; style?: Style }
 ): Promise<Plan> {
   const openai = getOpenAI({ apiKey: opts?.apiKey ?? process.env.OPENAI_API_KEY!, baseURL: opts?.baseURL })
   const messages = [
     { role: 'system' as const, content: systemPrompt },
-    { role: 'user' as const, content: userPrompt(input) },
+    { role: 'user' as const, content: userPrompt(input, opts?.style ?? 'balanced') },
   ]
 
-  const res = await openai.chat.completions.create({
+  const req: any = {
     model,
-    temperature,
     messages,
     response_format: { type: 'json_object' },
-  })
+  }
+  if (supportsTemperature(model)) req.temperature = temperature
+
+  const res = await openai.chat.completions.create(req)
   const text = res.choices?.[0]?.message?.content ?? ''
   const json = extractJson(text)
   const parsed = tryParseJson(json)
@@ -64,5 +81,5 @@ export async function generatePlanCandidate(
 }
 
 export function estimatePlanInputTokens(input: PlanInput): number {
-  return estimateTokens(userPrompt(input))
+  return estimateTokens(userPrompt(input, 'balanced'))
 }

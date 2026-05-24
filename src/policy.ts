@@ -16,7 +16,7 @@ export const temperatures = {
   plannerExploratory: 0.95,
   coder: 0.2,
   validator: 0.0,
-  ollama: 0.1,
+  omlx: 0.1,
 }
 
 export const longContext = {

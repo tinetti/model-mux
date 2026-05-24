@@ -2,7 +2,7 @@ import OpenAI from 'openai'
 
 export type OpenAIClientConfig = {
   apiKey: string
-  baseURL?: string // Allow overriding for Ollama OpenAI-compatible endpoints
+  baseURL?: string // Allow overriding for oMLX OpenAI-compatible endpoints
 }
 
 let client: OpenAI | null = null

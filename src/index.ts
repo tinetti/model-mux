@@ -1,7 +1,7 @@
 export { configure, getConfig } from './configure.js'
 export { route, detectTask, type TaskType } from './router.js'
 export { generatePlanCandidate, estimatePlanInputTokens, type PlanInput } from './prompts/planner.js'
-export { evaluateWithOllama } from './prompts/evaluator.js'
+export { evaluateWithOmlx } from './prompts/evaluator.js'
 export { cloudValidate } from './prompts/validator.js'
 export * from './schemas/plan.js'
 export * from './schemas/validation.js'
